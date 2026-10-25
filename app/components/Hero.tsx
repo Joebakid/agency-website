@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import Container from './Container';
 
 export default function Hero() {
@@ -12,18 +13,18 @@ export default function Hero() {
           We are a collective of engineering graduates building modern web applications, tools, and scalable digital products for businesses that demand excellence.
         </p>
         <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center md:justify-start">
-          <a
-            href="#trust"
+          <Link
+            href="/billy-cars"
             className="bg-white text-gray-950 px-6 py-3.5 rounded-md font-semibold text-center hover:bg-gray-200 transition-colors"
           >
-            View Expression of Interest
-          </a>
-          <a
-            href="#portfolio"
+            View Billy Cars Quotation
+          </Link>
+          <Link
+            href="/#portfolio"
             className="border border-gray-700 bg-gray-950/30 backdrop-blur-sm text-white px-6 py-3.5 rounded-md font-semibold text-center hover:bg-gray-800/60 transition-colors"
           >
             See Our Work
-          </a>
+          </Link>
         </div>
       </Container>
     </section>
