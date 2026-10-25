@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+
+@keyframes orb-a {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50%      { transform: translate3d(12vw, 10vh, 0) scale(1.15); }
+}
+@keyframes orb-b {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50%      { transform: translate3d(-14vw, 8vh, 0) scale(1.2); }
+}
+@keyframes orb-c {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50%      { transform: translate3d(10vw, -12vh, 0) scale(1.1); }
+}
+
+.bg-orb { will-change: transform; }
+
+@media (prefers-reduced-motion: reduce) {
+  .bg-orb { animation: none !important; }
+}
