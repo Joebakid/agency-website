@@ -17,7 +17,7 @@ export default function Hero() {
             href="/billy-cars"
             className="bg-white text-gray-950 px-6 py-3.5 rounded-md font-semibold text-center hover:bg-gray-200 transition-colors"
           >
-            View Billy Cars Quotation
+            Billy Cars Quotation
           </Link>
           <Link
             href="/#portfolio"
