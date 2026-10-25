@@ -1,4 +1,4 @@
-'use client'; // remove this line if you're on Vite/CRA
+'use client';
 
 import { useEffect, useRef, useState } from 'react';
 import Container from './Container';
@@ -21,7 +21,7 @@ function LivePreview({ url, name }: { url: string; name: string }) {
   const W = 1440;
   const H = 900;
   const wrapRef = useRef<HTMLDivElement>(null);
-  const [scale, setScale] = useState(0.3);
+  const [scale, setScale] = useState(0.25);
   const [inView, setInView] = useState(false);
   const [loaded, setLoaded] = useState(false);
 
@@ -64,24 +64,22 @@ function LivePreview({ url, name }: { url: string; name: string }) {
   );
 }
 
-/* Browser window chrome */
 function BrowserBar({ url }: { url: string }) {
   return (
-    <div className="flex items-center gap-3 px-4 py-2.5 bg-gray-900 border-b border-gray-800">
+    <div className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-2.5 bg-gray-900 border-b border-gray-800">
       <div className="flex gap-1.5">
-        <span className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
-        <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/80" />
-        <span className="w-2.5 h-2.5 rounded-full bg-green-500/80" />
+        <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-red-500/80" />
+        <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-yellow-500/80" />
+        <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-green-500/80" />
       </div>
-      <div className="flex-1 max-w-xs mx-auto text-center text-[11px] text-gray-400 bg-gray-950 border border-gray-800 rounded-md py-1 truncate px-3">
+      <div className="flex-1 max-w-xs mx-auto text-center text-[10px] sm:text-[11px] text-gray-400 bg-gray-950 border border-gray-800 rounded-md py-1 truncate px-3">
         {hostname(url)}
       </div>
-      <div className="w-10" />
+      <div className="w-8 sm:w-10" />
     </div>
   );
 }
 
-/* Full-screen interactive preview */
 function PreviewModal({ project, onClose }: { project: Project; onClose: () => void }) {
   const [device, setDevice] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
   const widths = { desktop: '100%', tablet: '768px', mobile: '390px' };
@@ -98,22 +96,33 @@ function PreviewModal({ project, onClose }: { project: Project; onClose: () => v
   }, [onClose]);
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-black/80 backdrop-blur-md p-3 md:p-8" onClick={onClose}>
+    <div
+      className="fixed inset-0 z-[100] h-[100dvh] flex flex-col bg-black/80 backdrop-blur-md sm:p-6 md:p-8"
+      onClick={onClose}
+    >
       <div
-        className="flex flex-col flex-1 min-h-0 max-w-7xl w-full mx-auto bg-gray-950 border border-gray-800 rounded-2xl overflow-hidden shadow-2xl"
+        className="flex flex-col flex-1 min-h-0 max-w-7xl w-full mx-auto bg-gray-950 sm:border border-gray-800 sm:rounded-2xl overflow-hidden shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Toolbar */}
-        <div className="flex items-center justify-between gap-4 px-4 py-3 bg-gray-900 border-b border-gray-800">
-          <div className="flex items-center gap-3 min-w-0">
-            <button onClick={onClose} aria-label="Close" className="w-3 h-3 rounded-full bg-red-500 hover:bg-red-400 shrink-0" />
-            <div>
-              <p className="text-sm font-semibold text-white leading-none">{project.name}</p>
+        <div className="flex items-center justify-between gap-3 px-3 sm:px-4 py-2.5 sm:py-3 bg-gray-900 border-b border-gray-800">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+            <button
+              onClick={onClose}
+              aria-label="Close preview"
+              className="p-2 -ml-1 rounded-full text-gray-300 hover:text-white hover:bg-gray-800 transition-colors shrink-0"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            <div className="min-w-0">
+              <p className="text-sm font-semibold text-white leading-none truncate">{project.name}</p>
               <p className="text-[11px] text-gray-500 mt-1 truncate">{hostname(project.url)}</p>
             </div>
           </div>
 
-          <div className="hidden sm:flex items-center gap-1 bg-gray-950 border border-gray-800 rounded-lg p-1">
+          <div className="hidden md:flex items-center gap-1 bg-gray-950 border border-gray-800 rounded-lg p-1">
             {(['desktop', 'tablet', 'mobile'] as const).map((d) => (
               <button
                 key={d}
@@ -131,7 +140,7 @@ function PreviewModal({ project, onClose }: { project: Project; onClose: () => v
             href={project.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-xs font-medium text-black bg-white hover:bg-gray-200 transition-colors rounded-lg px-4 py-2 shrink-0"
+            className="text-xs font-medium text-black bg-white hover:bg-gray-200 transition-colors rounded-lg px-3 sm:px-4 py-2 shrink-0"
           >
             Visit site ↗
           </a>
@@ -155,41 +164,47 @@ export default function Portfolio() {
   const [active, setActive] = useState<Project | null>(null);
 
   return (
-    <section id="portfolio" className="scroll-mt-24 py-24">
+    <section id="portfolio" className="scroll-mt-24 py-14 md:py-24">
       <Container>
-        <div className="mb-14 max-w-2xl">
-          <p className="text-xs uppercase tracking-[0.2em] text-blue-400 mb-4">Portfolio</p>
-          <h2 className="text-4xl md:text-5xl font-bold text-white tracking-tight">Selected work.</h2>
-          <p className="text-gray-400 mt-4">
-            Real products, live in production. Click any project to explore it.
+        <div className="mb-10 md:mb-14 max-w-2xl">
+          <p className="text-xs uppercase tracking-[0.2em] text-blue-400 mb-3 md:mb-4">Portfolio</p>
+          <h2 className="text-3xl md:text-5xl font-bold text-white tracking-tight">Selected work.</h2>
+          <p className="text-gray-400 mt-3 md:mt-4 text-sm sm:text-base">
+            Real products, live in production. Tap any project to explore it.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-8 lg:gap-10">
           {projects.map((project) => (
             <article key={project.name} className="group">
               <button
                 onClick={() => setActive(project)}
-                className="block w-full text-left rounded-xl overflow-hidden border border-gray-800 bg-gray-900 shadow-lg shadow-black/40 transition-all duration-500 group-hover:-translate-y-1 group-hover:border-gray-600 group-hover:shadow-2xl group-hover:shadow-blue-500/10"
+                className="block w-full text-left rounded-xl overflow-hidden border border-gray-800 bg-gray-900 shadow-lg shadow-black/40 transition-all duration-500 md:group-hover:-translate-y-1 group-hover:border-gray-600 group-hover:shadow-2xl group-hover:shadow-blue-500/10"
               >
                 <BrowserBar url={project.url} />
                 <div className="relative">
                   <LivePreview url={project.url} name={project.name} />
-                  {/* Hover overlay */}
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/50 transition-colors duration-300">
+
+                  {/* Desktop hover overlay */}
+                  <div className="hidden md:flex absolute inset-0 items-center justify-center bg-black/0 group-hover:bg-black/50 transition-colors duration-300">
                     <span className="opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 bg-white text-black text-sm font-medium rounded-full px-5 py-2.5">
                       View live preview
                     </span>
                   </div>
+
+                  {/* Touch hint (no hover on phones) */}
+                  <span className="md:hidden absolute bottom-2 right-2 bg-black/70 backdrop-blur text-white text-[11px] font-medium rounded-full px-3 py-1.5">
+                    Tap to explore
+                  </span>
                 </div>
               </button>
 
-              <div className="flex items-start justify-between gap-4 mt-5 px-1">
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-4 mt-4 sm:mt-5 px-1">
                 <div>
                   <h3 className="text-lg font-semibold text-white">{project.name}</h3>
                   <p className="text-sm text-gray-400 mt-1 max-w-md">{project.desc}</p>
                 </div>
-                <span className="text-[11px] text-gray-400 border border-gray-800 rounded-full px-3 py-1 whitespace-nowrap">
+                <span className="self-start text-[11px] text-gray-400 border border-gray-800 rounded-full px-3 py-1 whitespace-nowrap">
                   {project.tag}
                 </span>
               </div>
