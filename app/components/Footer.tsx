@@ -67,7 +67,7 @@ export default function Footer() {
                 rel="noreferrer" 
                 className="text-gray-400 hover:text-blue-400 transition-colors flex items-center gap-2"
               >
-                WhatsApp: 09037291405
+                WhatsApp: +2349037291405
               </a>
               <a 
                 href={`mailto:${EMAIL_ADDRESS}`} 

@@ -1,10 +1,13 @@
 import Container from '../components/Container';
-import Link from 'next/link';
+import BackButton from '../components/BackButton';
+import DesignGallery from '../components/DesignGallery';
 
 export const metadata = {
-  title: 'About, Team & Compliance | Bawo Digital',
+  title: 'About, Team & Compliance',
   description:
     'Meet Bawo Digital: an engineering-driven agency of three marine engineering graduates building websites, products and brands.',
+  alternates: { canonical: '/compliance' },
+  openGraph: { url: '/compliance' },
 };
 
 const team = [
@@ -52,9 +55,6 @@ const figmaProjects = [
   },
 ];
 
-const figmaEmbed = (url: string) =>
-  `https://www.figma.com/embed?embed_host=share&url=${encodeURIComponent(url)}`;
-
 const principles = [
   { title: 'Engineering mindset', text: 'We plan, test and build like engineers: structured, measurable and made to hold up under load.' },
   { title: 'Design and code, one team', text: 'Designers and developers work side by side, so what is designed is exactly what ships.' },
@@ -100,32 +100,29 @@ const card = 'bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-2xl
 
 export default function CompliancePage() {
   return (
-    <div className="py-24">
+    <div className="py-12 md:py-24">
       <Container>
-        {/* Intro */}
-        <Link href="/" className="text-blue-400 hover:text-blue-300 text-sm font-medium inline-flex items-center gap-2 mb-8 transition-colors">
-          ← Back to Home
-        </Link>
+        <BackButton text="Back to Home" fallbackHref="/" />
 
         {/* 1. THE COMPANY */}
-        <section className="mb-28">
+        <section className="mb-20 md:mb-28">
           <p className="text-xs uppercase tracking-[0.2em] text-blue-400 mb-4">About Bawo Digital</p>
-          <h1 className="text-4xl md:text-6xl font-bold text-white tracking-tight max-w-4xl">
+          <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold text-white tracking-tight max-w-4xl">
             An engineering-driven studio for brands that want to scale.
           </h1>
-          <div className="grid lg:grid-cols-2 gap-10 mt-10">
-            <p className="text-lg text-gray-400 leading-relaxed">
+          <div className="grid lg:grid-cols-2 gap-6 lg:gap-10 mt-8 md:mt-10">
+            <p className="text-base md:text-lg text-gray-400 leading-relaxed">
               Bawo Digital started as an academic project between three friends and grew into a full digital agency.
               We design and build websites, web apps, e-commerce stores and brand identities for businesses that
               need more than a template.
             </p>
-            <p className="text-lg text-gray-400 leading-relaxed">
+            <p className="text-base md:text-lg text-gray-400 leading-relaxed">
               Because we come from engineering, we treat every project as a system: researched, designed, built and
               maintained with care. The result is work that looks sharp, performs fast and keeps working after launch.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6 mt-12">
+          <div className="grid md:grid-cols-3 gap-4 md:gap-6 mt-10 md:mt-12">
             {principles.map((p) => (
               <div key={p.title} className={`${card} p-6`}>
                 <h3 className="text-white font-semibold mb-2">{p.title}</h3>
@@ -136,16 +133,16 @@ export default function CompliancePage() {
         </section>
 
         {/* 2. THE TEAM */}
-        <section className="mb-28">
+        <section className="mb-20 md:mb-28">
           <p className="text-xs uppercase tracking-[0.2em] text-blue-400 mb-4">The team</p>
-          <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight mb-3">The people behind the work.</h2>
-          <p className="text-gray-400 max-w-2xl mb-12">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white tracking-tight mb-3">The people behind the work.</h2>
+          <p className="text-gray-400 max-w-2xl mb-10 md:mb-12">
             Three marine engineering graduates who turned a shared love for technology and design into a studio.
           </p>
 
-          <div className="grid lg:grid-cols-3 gap-6">
+          <div className="grid lg:grid-cols-3 gap-4 md:gap-6">
             {team.map((m) => (
-              <div key={m.name} className={`${card} p-7 flex flex-col hover:border-gray-600 transition-colors`}>
+              <div key={m.name} className={`${card} p-6 md:p-7 flex flex-col hover:border-gray-600 transition-colors`}>
                 <div className="w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 to-violet-500 flex items-center justify-center text-xl font-bold text-white mb-5">
                   {m.name[0]}
                 </div>
@@ -175,52 +172,27 @@ export default function CompliancePage() {
         </section>
 
         {/* 3. DESIGN WORK */}
-        <section id="design-work" className="mb-28 scroll-mt-24">
+        <section id="design-work" className="mb-20 md:mb-28 scroll-mt-24">
           <p className="text-xs uppercase tracking-[0.2em] text-blue-400 mb-4">Design work</p>
-          <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight mb-3">Selected designs by Solomon.</h2>
-          <p className="text-gray-400 max-w-2xl mb-12">
-            Live Figma files. Scroll, zoom and pan around inside each frame.
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white tracking-tight mb-3">Selected designs by Solomon.</h2>
+          <p className="text-gray-400 max-w-2xl mb-10 md:mb-12">
+            Tap any project to explore the live Figma file. Scroll, zoom and pan around inside it.
           </p>
 
-          <div className="space-y-12">
-            {figmaProjects.map((f) => (
-              <div key={f.name}>
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-white">{f.name}</h3>
-                  <a
-                    href={f.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm text-gray-400 hover:text-white transition-colors"
-                  >
-                    Open in Figma ↗
-                  </a>
-                </div>
-                <div className="rounded-xl overflow-hidden border border-gray-800 bg-gray-900/50 shadow-2xl shadow-black/40">
-                  <iframe
-                    src={figmaEmbed(f.url)}
-                    title={`${f.name} Figma design`}
-                    loading="lazy"
-                    allowFullScreen
-                    className="w-full h-[420px] md:h-[600px] border-0"
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
+          <DesignGallery designs={figmaProjects} />
         </section>
 
         {/* 4. LICENSES & COMPLIANCE */}
         <section>
           <p className="text-xs uppercase tracking-[0.2em] text-blue-400 mb-4">Trust</p>
-          <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight mb-3">Licenses & Compliance</h2>
-          <p className="text-gray-400 max-w-3xl mb-12">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white tracking-tight mb-3">Licenses &amp; Compliance</h2>
+          <p className="text-gray-400 max-w-3xl mb-10 md:mb-12">
             Transparency and technical rigor are the cornerstones of Bawo Digital. Here is how we operate.
           </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
             {compliance.map((c) => (
-              <div key={c.title} className={`${card} p-8`}>
+              <div key={c.title} className={`${card} p-6 md:p-8`}>
                 <h3 className="text-xl font-bold text-white mb-3 flex items-center gap-3">
                   <span>{c.icon}</span> {c.title}
                 </h3>
@@ -246,8 +218,6 @@ export default function CompliancePage() {
               </div>
             ))}
           </div>
-
-      
         </section>
       </Container>
     </div>
