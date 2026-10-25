@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Container from './Container';
 import Nav from './Nav';
 import Logo from './Logo';
+import LanguageSwitcher from './LanguageSwitcher';
 
 export default function Header() {
   const [open, setOpen] = useState(false);
@@ -17,7 +18,10 @@ export default function Header() {
           <Logo />
           <Nav />
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
+            {/* Manual language picker: visible on desktop and mobile */}
+            <LanguageSwitcher />
+
             <Link
               href="/booking"
               className="hidden md:inline-flex bg-white text-gray-950 text-sm font-semibold rounded-full px-5 py-2 hover:bg-gray-200 transition-colors"
