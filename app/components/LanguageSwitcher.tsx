@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import { LANGUAGES } from "../lib/languages";
 
 declare global {
@@ -23,6 +24,18 @@ function clearTranslateCookie() {
   document.cookie = `${past}; path=/`;
   document.cookie = `${past}; path=/; domain=${host}`;
   document.cookie = `${past}; path=/; domain=.${host}`;
+}
+
+// Builds the current page URL with ?lang=xx (keeps other params and the #hash)
+function urlWithLang(code: string) {
+  const u = new URL(window.location.href);
+  u.searchParams.set("lang", code);
+  return u.toString();
+}
+
+// Shows the language in the address bar without reloading
+function reflectInUrl(code: string) {
+  window.history.replaceState(window.history.state, "", urlWithLang(code));
 }
 
 // Loads Google's translator once and resolves when it is ready
@@ -72,17 +85,26 @@ function applyLanguage(code: string): Promise<boolean> {
 }
 
 export default function LanguageSwitcher() {
+  const pathname = usePathname();
   const [lang, setLang] = useState("en");
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [copied, setCopied] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
-  // Start loading the translator immediately if a language is already set
+  // On first load: start the translator if a language is set
   useEffect(() => {
     const current = readLang();
     setLang(current);
     if (current !== "en") loadTranslator().then(() => applyLanguage(current));
   }, []);
+
+  // Keep ?lang=xx in the address bar, including after moving to another page
+  useEffect(() => {
+    const current = readLang();
+    const hasParam = new URL(window.location.href).searchParams.has("lang");
+    if (current !== "en" || hasParam) reflectInUrl(current);
+  }, [pathname]);
 
   useEffect(() => {
     const onClick = (e: MouseEvent) => {
@@ -94,20 +116,24 @@ export default function LanguageSwitcher() {
 
   const choose = async (code: string) => {
     setOpen(false);
-    if (code === lang) return;
+    if (code === lang) {
+      reflectInUrl(code);
+      return;
+    }
 
     document.cookie = "lang_set=1; path=/; max-age=31536000"; // remember the choice
 
-    // Going back to English needs a clean page, so reload once
+    // Going back to English needs a clean page: reload with ?lang=en in the URL
     if (code === "en") {
       clearTranslateCookie();
-      window.location.reload();
+      window.location.href = urlWithLang("en");
       return;
     }
 
     clearTranslateCookie();
     document.cookie = `googtrans=/en/${code}; path=/; max-age=31536000`;
     setLang(code);
+    reflectInUrl(code); // address bar now shows ?lang=zh-CN
     setBusy(true);
 
     await loadTranslator();
@@ -115,6 +141,23 @@ export default function LanguageSwitcher() {
     setBusy(false);
 
     if (!ok) window.location.reload(); // last resort
+  };
+
+  const copyLink = async () => {
+    const link = urlWithLang(lang);
+    try {
+      await navigator.clipboard.writeText(link);
+    } catch {
+      // Older browsers: fall back to a temporary input
+      const t = document.createElement("input");
+      t.value = link;
+      document.body.appendChild(t);
+      t.select();
+      document.execCommand("copy");
+      document.body.removeChild(t);
+    }
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   const current = LANGUAGES.find((l) => l.code === lang) ?? LANGUAGES[0];
@@ -147,24 +190,36 @@ export default function LanguageSwitcher() {
       </button>
 
       {open && (
-        <ul
-          role="listbox"
-          className="absolute right-0 mt-2 w-48 max-h-72 overflow-y-auto rounded-xl border border-gray-800 bg-gray-950/95 backdrop-blur-xl shadow-2xl shadow-black/50 py-1.5 z-[60]"
-        >
-          {LANGUAGES.map((l) => (
-            <li key={l.code} role="option" aria-selected={l.code === lang}>
-              <button
-                type="button"
-                onClick={() => choose(l.code)}
-                className={`w-full text-left px-4 py-2.5 text-sm transition-colors hover:bg-gray-800/70 ${
-                  l.code === lang ? "text-blue-400 font-medium" : "text-gray-300"
-                }`}
-              >
-                {l.label}
-              </button>
-            </li>
-          ))}
-        </ul>
+        <div className="absolute right-0 mt-2 w-52 rounded-xl border border-gray-800 bg-gray-950/95 backdrop-blur-xl shadow-2xl shadow-black/50 z-[60] overflow-hidden">
+          <ul role="listbox" className="max-h-64 overflow-y-auto py-1.5">
+            {LANGUAGES.map((l) => (
+              <li key={l.code} role="option" aria-selected={l.code === lang}>
+                <button
+                  type="button"
+                  onClick={() => choose(l.code)}
+                  className={`w-full text-left px-4 py-2.5 text-sm transition-colors hover:bg-gray-800/70 ${
+                    l.code === lang ? "text-blue-400 font-medium" : "text-gray-300"
+                  }`}
+                >
+                  {l.label}
+                </button>
+              </li>
+            ))}
+          </ul>
+
+          <div className="border-t border-gray-800 p-2">
+            <button
+              type="button"
+              onClick={copyLink}
+              className="w-full flex items-center justify-center gap-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg py-2.5 transition-colors"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+              </svg>
+              {copied ? "Link copied!" : "Copy link in this language"}
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );
