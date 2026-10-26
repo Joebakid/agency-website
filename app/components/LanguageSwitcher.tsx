@@ -38,6 +38,11 @@ function reflectInUrl(code: string) {
   window.history.replaceState(window.history.state, "", urlWithLang(code));
 }
 
+// Lets other parts of the site (e.g. the booking calendar) know the language changed
+function announce(code: string) {
+  window.dispatchEvent(new CustomEvent("langchange", { detail: code }));
+}
+
 // Loads Google's translator once and resolves when it is ready
 let loader: Promise<void> | null = null;
 function loadTranslator(): Promise<void> {
@@ -126,6 +131,7 @@ export default function LanguageSwitcher() {
     // Going back to English needs a clean page: reload with ?lang=en in the URL
     if (code === "en") {
       clearTranslateCookie();
+      announce("en");
       window.location.href = urlWithLang("en");
       return;
     }
@@ -134,6 +140,7 @@ export default function LanguageSwitcher() {
     document.cookie = `googtrans=/en/${code}; path=/; max-age=31536000`;
     setLang(code);
     reflectInUrl(code); // address bar now shows ?lang=zh-CN
+    announce(code); // the booking calendar reloads in this language
     setBusy(true);
 
     await loadTranslator();

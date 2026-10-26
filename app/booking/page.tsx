@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Cal, { getCalApi } from "@calcom/embed-react";
 import Container from "../components/Container";
 import BackButton from "../components/BackButton";
@@ -9,7 +9,46 @@ import ContactForm from "../components/ContactForm";
 const CAL_LINK = "joseph-bawo-3jzeyt/30min";
 const EMAIL = "josephbawo@gmail.com";
 
+// Your language codes -> Cal.com locale codes
+const CAL_LOCALE: Record<string, string> = {
+  en: "en",
+  "zh-CN": "zh-CN",
+  "zh-TW": "zh-TW",
+  fr: "fr",
+  es: "es",
+  pt: "pt",
+  de: "de",
+  it: "it",
+  nl: "nl",
+  ru: "ru",
+  ar: "ar",
+  tr: "tr",
+  ja: "ja",
+  ko: "ko",
+  hi: "hi",
+};
+
+// The page language: ?lang= in the URL first, then the translate cookie
+function readPageLang(): string {
+  const fromUrl = new URL(window.location.href).searchParams.get("lang");
+  if (fromUrl && fromUrl !== "auto") return fromUrl;
+  const m = document.cookie.match(/(?:^|;\s*)googtrans=\/[^/]+\/([^;]+)/);
+  return m ? decodeURIComponent(m[1]) : "en";
+}
+
 export default function Booking() {
+  const [lang, setLang] = useState("en");
+
+  // Follow the page language, including when it changes from the menu
+  useEffect(() => {
+    const update = () => setLang(readPageLang());
+    update();
+    window.addEventListener("langchange", update);
+    return () => window.removeEventListener("langchange", update);
+  }, []);
+
+  const locale = CAL_LOCALE[lang] ?? "en";
+
   useEffect(() => {
     (async () => {
       const cal = await getCalApi();
@@ -39,19 +78,23 @@ export default function Booking() {
           </p>
         </div>
 
-        {/* Calendar */}
-        <div className="rounded-xl sm:rounded-2xl border border-gray-800 bg-gray-900/50 backdrop-blur-sm overflow-hidden min-h-[640px] sm:min-h-[700px]">
+        {/* Calendar: re-created when the language changes so Cal.com reloads in it */}
+        <div
+          translate="no"
+          className="rounded-xl sm:rounded-2xl border border-gray-800 bg-gray-900/50 backdrop-blur-sm overflow-hidden min-h-[640px] sm:min-h-[700px]"
+        >
           <Cal
-            calLink={CAL_LINK}
+            key={locale}
+            calLink={`${CAL_LINK}?lang=${locale}&locale=${locale}`}
             style={{ width: "100%", height: "100%", overflow: "auto" }}
-            config={{ layout: "month_view", theme: "dark" }}
+            config={{ layout: "month_view", theme: "dark", lang: locale, locale }}
           />
         </div>
 
         <p className="text-center text-xs sm:text-sm text-gray-500 mt-5 sm:mt-6">
           Calendar not loading?{" "}
           <a
-            href={`https://cal.com/${CAL_LINK}`}
+            href={`https://cal.com/${CAL_LINK}?lang=${locale}&locale=${locale}`}
             target="_blank"
             rel="noopener noreferrer"
             className="text-blue-400 hover:text-blue-300 underline underline-offset-2"
